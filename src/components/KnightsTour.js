@@ -33,8 +33,17 @@ const Button = styled.button`
   }
 `;
 
-const Slider = styled.input`
-  margin: 0 10px;
+const Select = styled.select`
+  background-color: #444;
+  color: #fff;
+  border: 2px solid #555;
+  padding: 10px 20px;
+  margin: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  &:hover {
+    background-color: #666;
+  }
 `;
 
 const KnightsTour = () => {
@@ -46,7 +55,7 @@ const KnightsTour = () => {
   const [path, setPath] = useState([]);
   const [currentStep, setCurrentStep] = useState(0);
   const [knightPosition, setKnightPosition] = useState(null);
-  const [speed, setSpeed] = useState(0.5);
+  const [algorithm, setAlgorithm] = useState("backtracking");
 
   const moves = [
     [2, 1],
@@ -68,16 +77,26 @@ const KnightsTour = () => {
       .map(() => Array(N).fill(null));
     let newPath = [[0, 0]];
     newBoard[0][0] = "K";
-    if (solveKnightsTourUtil(newBoard, 0, 0, 1, newPath)) {
-      setBoard(newBoard);
-      setPath(newPath);
-      setCurrentStep(0);
-    } else {
-      alert("No solution exists");
+    if (algorithm === "backtracking") {
+      if (solveKnightsTourBacktracking(newBoard, 0, 0, 1, newPath)) {
+        setBoard(newBoard);
+        setPath(newPath);
+        setCurrentStep(0); // Reset current step
+      } else {
+        alert("No solution exists");
+      }
+    } else if (algorithm === "warnsdorff") {
+      if (solveKnightsTourWarnsdorff(newBoard, newPath)) {
+        setBoard(newBoard);
+        setPath(newPath);
+        setCurrentStep(0);
+      } else {
+        alert("No solution exists");
+      }
     }
   };
 
-  const solveKnightsTourUtil = (board, currX, currY, moveI, path) => {
+  const solveKnightsTourBacktracking = (board, currX, currY, moveI, path) => {
     if (moveI === N * N) return true;
 
     for (let [dx, dy] of moves) {
@@ -86,7 +105,7 @@ const KnightsTour = () => {
       if (isSafe(nextX, nextY, board)) {
         board[nextX][nextY] = "K";
         path.push([nextX, nextY]);
-        if (solveKnightsTourUtil(board, nextX, nextY, moveI + 1, path))
+        if (solveKnightsTourBacktracking(board, nextX, nextY, moveI + 1, path))
           return true;
         board[nextX][nextY] = null;
         path.pop();
@@ -95,9 +114,47 @@ const KnightsTour = () => {
     return false;
   };
 
+  const solveKnightsTourWarnsdorff = (board, path) => {
+    let x = 0,
+      y = 0;
+    for (let i = 1; i < N * N; i++) {
+      let minDegIdx = -1,
+        minDeg = 9;
+      for (let k = 0; k < moves.length; k++) {
+        let nx = x + moves[k][0],
+          ny = y + moves[k][1];
+        if (isSafe(nx, ny, board)) {
+          let c = getDegree(nx, ny, board);
+          if (c < minDeg) {
+            minDegIdx = k;
+            minDeg = c;
+          }
+        }
+      }
+
+      if (minDegIdx === -1) return false;
+
+      x += moves[minDegIdx][0];
+      y += moves[minDegIdx][1];
+      board[x][y] = "K";
+      path.push([x, y]);
+    }
+    return true;
+  };
+
+  const getDegree = (x, y, board) => {
+    let count = 0;
+    for (let [dx, dy] of moves) {
+      if (isSafe(x + dx, y + dy, board)) {
+        count++;
+      }
+    }
+    return count;
+  };
+
   useEffect(() => {
     solveKnightsTour();
-  }, []);
+  }, [algorithm]);
 
   useEffect(() => {
     if (path.length > 0) {
@@ -112,9 +169,16 @@ const KnightsTour = () => {
         board={board}
         knightPosition={knightPosition}
         path={path.slice(0, currentStep)}
-        speed={speed}
+        speed={0.5}
       />
       <Controls>
+        <Select
+          value={algorithm}
+          onChange={(e) => setAlgorithm(e.target.value)}
+        >
+          <option value="backtracking">Backtracking</option>
+          <option value="warnsdorff">Warnsdorff's Rule</option>
+        </Select>
         <Button onClick={() => setCurrentStep(0)}>First</Button>
         <Button onClick={() => setCurrentStep((step) => Math.max(step - 1, 0))}>
           Previous
