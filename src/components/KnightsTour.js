@@ -67,8 +67,9 @@ const KnightsTour = () => {
     [2, -1],
   ];
 
-  const isSafe = (x, y, board) =>
-    x >= 0 && y >= 0 && x < N && y < N && board[x][y] === null;
+  const isSafe = useCallback((x, y, board) => {
+    return x >= 0 && y >= 0 && x < N && y < N && board[x][y] === null;
+  }, [N]);
 
   const solveKnightsTourBacktracking = useCallback((board, currX, currY, moveI, path) => {
     if (moveI === N * N) return true;
@@ -87,6 +88,16 @@ const KnightsTour = () => {
     }
     return false;
   }, [N, moves, isSafe]);
+
+  const getDegree = useCallback((x, y, board) => {
+    let count = 0;
+    for (let [dx, dy] of moves) {
+      if (isSafe(x + dx, y + dy, board)) {
+        count++;
+      }
+    }
+    return count;
+  }, [moves, isSafe]);
 
   const solveKnightsTourWarnsdorff = useCallback((board, path) => {
     let x = 0,
@@ -114,17 +125,7 @@ const KnightsTour = () => {
       path.push([x, y]);
     }
     return true;
-  }, [N, moves, isSafe]);
-
-  const getDegree = (x, y, board) => {
-    let count = 0;
-    for (let [dx, dy] of moves) {
-      if (isSafe(x + dx, y + dy, board)) {
-        count++;
-      }
-    }
-    return count;
-  };
+  }, [N, moves, isSafe, getDegree]);
 
   const solveKnightsTour = useCallback(() => {
     let newBoard = Array(N)
