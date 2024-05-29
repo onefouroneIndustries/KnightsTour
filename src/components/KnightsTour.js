@@ -1,5 +1,4 @@
-// src/components/KnightsTour.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Chessboard from "./Chessboard";
 import styled from "styled-components";
 
@@ -71,32 +70,7 @@ const KnightsTour = () => {
   const isSafe = (x, y, board) =>
     x >= 0 && y >= 0 && x < N && y < N && board[x][y] === null;
 
-  const solveKnightsTour = () => {
-    let newBoard = Array(N)
-      .fill()
-      .map(() => Array(N).fill(null));
-    let newPath = [[0, 0]];
-    newBoard[0][0] = "K";
-    if (algorithm === "backtracking") {
-      if (solveKnightsTourBacktracking(newBoard, 0, 0, 1, newPath)) {
-        setBoard(newBoard);
-        setPath(newPath);
-        setCurrentStep(0); // Reset current step
-      } else {
-        alert("No solution exists");
-      }
-    } else if (algorithm === "warnsdorff") {
-      if (solveKnightsTourWarnsdorff(newBoard, newPath)) {
-        setBoard(newBoard);
-        setPath(newPath);
-        setCurrentStep(0);
-      } else {
-        alert("No solution exists");
-      }
-    }
-  };
-
-  const solveKnightsTourBacktracking = (board, currX, currY, moveI, path) => {
+  const solveKnightsTourBacktracking = useCallback((board, currX, currY, moveI, path) => {
     if (moveI === N * N) return true;
 
     for (let [dx, dy] of moves) {
@@ -112,9 +86,9 @@ const KnightsTour = () => {
       }
     }
     return false;
-  };
+  }, [N, moves, isSafe]);
 
-  const solveKnightsTourWarnsdorff = (board, path) => {
+  const solveKnightsTourWarnsdorff = useCallback((board, path) => {
     let x = 0,
       y = 0;
     for (let i = 1; i < N * N; i++) {
@@ -140,7 +114,7 @@ const KnightsTour = () => {
       path.push([x, y]);
     }
     return true;
-  };
+  }, [N, moves, isSafe]);
 
   const getDegree = (x, y, board) => {
     let count = 0;
@@ -151,6 +125,31 @@ const KnightsTour = () => {
     }
     return count;
   };
+
+  const solveKnightsTour = useCallback(() => {
+    let newBoard = Array(N)
+      .fill()
+      .map(() => Array(N).fill(null));
+    let newPath = [[0, 0]];
+    newBoard[0][0] = "K";
+    if (algorithm === "backtracking") {
+      if (solveKnightsTourBacktracking(newBoard, 0, 0, 1, newPath)) {
+        setBoard(newBoard);
+        setPath(newPath);
+        setCurrentStep(0); // Reset current step
+      } else {
+        alert("No solution exists");
+      }
+    } else if (algorithm === "warnsdorff") {
+      if (solveKnightsTourWarnsdorff(newBoard, newPath)) {
+        setBoard(newBoard);
+        setPath(newPath);
+        setCurrentStep(0);
+      } else {
+        alert("No solution exists");
+      }
+    }
+  }, [algorithm, solveKnightsTourBacktracking, solveKnightsTourWarnsdorff, N]);
 
   useEffect(() => {
     solveKnightsTour();
