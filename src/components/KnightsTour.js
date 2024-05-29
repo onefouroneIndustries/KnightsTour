@@ -45,6 +45,17 @@ const Select = styled.select`
   }
 `;
 
+const moves = [
+  [2, 1],
+  [1, 2],
+  [-1, 2],
+  [-2, 1],
+  [-2, -1],
+  [-1, -2],
+  [1, -2],
+  [2, -1],
+];
+
 const KnightsTour = () => {
   const N = 8;
   const initialBoard = Array(N)
@@ -55,17 +66,6 @@ const KnightsTour = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [knightPosition, setKnightPosition] = useState(null);
   const [algorithm, setAlgorithm] = useState("backtracking");
-
-  const moves = [
-    [2, 1],
-    [1, 2],
-    [-1, 2],
-    [-2, 1],
-    [-2, -1],
-    [-1, -2],
-    [1, -2],
-    [2, -1],
-  ];
 
   const isSafe = useCallback((x, y, board) => {
     return x >= 0 && y >= 0 && x < N && y < N && board[x][y] === null;
@@ -87,7 +87,7 @@ const KnightsTour = () => {
       }
     }
     return false;
-  }, [N, moves, isSafe]);
+  }, [N, isSafe]);
 
   const getDegree = useCallback((x, y, board) => {
     let count = 0;
@@ -97,7 +97,7 @@ const KnightsTour = () => {
       }
     }
     return count;
-  }, [moves, isSafe]);
+  }, [isSafe]);
 
   const solveKnightsTourWarnsdorff = useCallback((board, path) => {
     let x = 0,
@@ -125,7 +125,7 @@ const KnightsTour = () => {
       path.push([x, y]);
     }
     return true;
-  }, [N, moves, isSafe, getDegree]);
+  }, [N, isSafe, getDegree]);
 
   const solveKnightsTour = useCallback(() => {
     let newBoard = Array(N)
