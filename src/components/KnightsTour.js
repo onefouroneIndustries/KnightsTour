@@ -154,7 +154,7 @@ const KnightsTour = () => {
 
   useEffect(() => {
     solveKnightsTour();
-  }, [algorithm]);
+  }, [solveKnightsTour]);
 
   useEffect(() => {
     if (path.length > 0) {
