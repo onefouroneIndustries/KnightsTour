@@ -2,6 +2,8 @@
 import React from "react";
 import styled, { keyframes } from "styled-components";
 
+
+
 const Board = styled.div`
   display: grid;
   grid-template-columns: repeat(8, 60px);
@@ -15,7 +17,7 @@ const Square = styled.div`
   width: 60px;
   height: 60px;
   background-color: ${(props) =>
-    props.isKnight ? "#ffcc00" : props.isDark ? "#2A692A" : "#eeeed2"};
+    props.isKnight ? "#ffcc00" : props.isDark ? "#da8a8b" : "#282157"};
   border: 1px solid #444;
   display: flex;
   justify-content: center;
