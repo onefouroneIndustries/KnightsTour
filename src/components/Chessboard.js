@@ -1,8 +1,6 @@
-// src/components/Chessboard.js
 import React from "react";
 import styled, { keyframes } from "styled-components";
-
-
+import knightImage from "../knight.jpg";
 
 const Board = styled.div`
   display: grid;
@@ -16,14 +14,12 @@ const Board = styled.div`
 const Square = styled.div`
   width: 60px;
   height: 60px;
-  background-color: ${(props) =>
-    props.isKnight ? "#ffcc00" : props.isDark ? "#da8a8b" : "#282157"};
+  background-color: ${(props) => (props.isDark ? "#da8a8b" : "#282157")};
   border: 1px solid #444;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 2rem;
-  color: ${(props) => (props.isKnight ? "#000" : "transparent")};
   position: relative;
 `;
 
@@ -46,13 +42,18 @@ const Knight = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 2rem;
+  font-size: 5rem;
   color: #000;
   border: 2px solid #ffcc00;
   background-color: #ffcc00;
   box-sizing: border-box;
   animation: ${(props) => moveKnight} ${(props) => props.speed}s ease-in-out
     forwards;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
 `;
 
 const PathSquare = styled.div`
@@ -73,9 +74,7 @@ const Chessboard = ({ board, knightPosition, path, speed }) => {
           <Square
             key={`${rowIndex}-${colIndex}`}
             isDark={(rowIndex + colIndex) % 2 === 1}
-          >
-            {col === "K" && "♞"}
-          </Square>
+          ></Square>
         ))
       )}
       {path.map(([x, y], index) => (
@@ -83,7 +82,7 @@ const Chessboard = ({ board, knightPosition, path, speed }) => {
       ))}
       {knightPosition && (
         <Knight x={knightPosition[1]} y={knightPosition[0]} speed={speed}>
-          ♞
+          <img src={knightImage} alt="Knight" width="40" />
         </Knight>
       )}
     </Board>
