@@ -50,8 +50,8 @@ const Knight = styled.div`
   animation: ${(props) => moveKnight} ${(props) => props.speed}s ease-in-out
     forwards;
   img {
-    width: 100%;
-    height: 100%;
+    width: 150%;
+    height: 150%;
     object-fit: contain;
   }
 `;
